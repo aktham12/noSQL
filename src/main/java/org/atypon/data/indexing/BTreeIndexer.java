@@ -9,10 +9,10 @@ import java.util.Arrays;
 import java.util.Objects;
 
 @Getter
-public class IndexerImpl implements Indexer {
+public class BTreeIndexer implements Indexer {
     private final BTree<String, BTree<String, ArrayList<JsonNode>>> index;
 
-    public IndexerImpl() {
+    public BTreeIndexer() {
         index = new BTree<>();
     }
 
@@ -78,6 +78,11 @@ public class IndexerImpl implements Indexer {
     @Override
     public String[] getAllPropertyIndexed() {
         return Arrays.stream(this.index.getKeys()).filter(Objects::nonNull).toArray(String[]::new);
+    }
+
+    @Override
+    public boolean has(String key) {
+        return index.search(key) != null;
     }
 
 

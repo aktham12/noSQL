@@ -21,5 +21,7 @@ public interface Indexer {
 
     void deleteSpecificKey(String property, String key);
 
+    boolean has(String key);
+
 
 }

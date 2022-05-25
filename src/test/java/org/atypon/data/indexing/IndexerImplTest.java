@@ -18,7 +18,7 @@ public class IndexerImplTest {
 
     @Before
     public void setUp() throws Exception {
-        indexer = new IndexerImpl();
+        indexer = new BTreeIndexer();
         mapper = new ObjectMapper();
 
         nodes = new ArrayList<>();
