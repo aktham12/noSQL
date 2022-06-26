@@ -1,11 +1,14 @@
 package org.atypon.data.indexing;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.atypon.datastructers.BPlusTree.BTree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public interface Indexer {
-    void makeIndexOn(String property, ArrayList<JsonNode> jsonNode);
+    void makeIndexOn(String property, ArrayNode jsonNode);
 
     ArrayList<JsonNode> get(String property, String exactValue);
 
@@ -23,5 +26,8 @@ public interface Indexer {
 
     boolean has(String key);
 
+    BTree<String, BTree<String, ArrayList<JsonNode>>> getIndexed();
+
+    void setIndexed(BTree<String, BTree<String, ArrayList<JsonNode>>> indexed);
 
 }

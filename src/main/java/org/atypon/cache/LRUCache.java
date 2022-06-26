@@ -1,44 +1,52 @@
 package org.atypon.cache;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.google.common.cache.CacheBuilder;
 
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
-public class LRUCache<K,V> extends LinkedHashMap<K,V> implements Cache<K,V>{
-
+public class LRUCache<K, V> implements Cache<K, V> {
+    private final ConcurrentMap<K, V> cacheMap;
     private final int maxSize;
 
     public LRUCache(int capacity) {
-        super(capacity, 0.75f, true);
         this.maxSize = capacity;
+        cacheMap =
+                CacheBuilder.newBuilder()
+                        .maximumSize(capacity)
+                        .<K, V>build().asMap();
     }
 
+
     @Override
-    public V get(Object o) {
-        return super.get(o);
+    public V get(K o) {
+        return cacheMap.get(o);
     }
 
 
     @Override
     public V put(K k, V v) {
-        return super.put(k, v);
+        return cacheMap.put(k, v);
     }
 
 
     @Override
-    public V remove(Object o) {
-        return super.remove(o);
+    public V remove(K o) {
+        return cacheMap.remove(o);
     }
 
     @Override
-    public boolean containsKey(Object o) {
-        return super.containsKey(o);
+    public boolean containsKey(K o) {
+        return cacheMap.containsKey(o);
     }
 
-
+    @Override
+    public int size() {
+        return maxSize;
+    }
 
     @Override
-    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-        return this.size() > maxSize;
+    public Set<K> keySet() {
+        return cacheMap.keySet();
     }
 }

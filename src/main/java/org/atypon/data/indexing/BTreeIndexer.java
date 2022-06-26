@@ -1,38 +1,45 @@
 package org.atypon.data.indexing;
 
-import BPlusTree.BTree;
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.Getter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.atypon.datastructers.BPlusTree.BTree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
-@Getter
-public class BTreeIndexer implements Indexer {
-    private final BTree<String, BTree<String, ArrayList<JsonNode>>> index;
+
+public class BTreeIndexer implements Indexer, Serializable {
+    private BTree<String, BTree<String, ArrayList<JsonNode>>> index;
 
     public BTreeIndexer() {
         index = new BTree<>();
     }
 
     @Override
-    public void makeIndexOn(String property, ArrayList<JsonNode> jsonNode) {
+    public void makeIndexOn(String property, ArrayNode jsonNode) {
         if (index.search(property) == null)
             index.insert(property, new BTree<>());
+        if (jsonNode.size() == 0) {
+            return;
+        }
         for (JsonNode node : jsonNode) {
-            addToIndexed(property, node);
+            this.addToIndexed(property, node);
         }
     }
 
     @Override
     public void addToIndexed(String property, JsonNode node) {
-        String nodeValue = node.get(property).asText();
-        BTree<String, ArrayList<JsonNode>> temp = index.search(property);
-        if (temp.search(nodeValue) == null) {
-            temp.insert(nodeValue, new ArrayList<>());
+        String nodeValue;
+        if (node.has(property)) {
+            nodeValue = node.get(property).asText();
+            BTree<String, ArrayList<JsonNode>> temp = index.search(property);
+            if (temp.search(nodeValue) == null) {
+                temp.insert(nodeValue, new ArrayList<>());
+            }
+            temp.search(nodeValue).add(node);
         }
-        temp.search(nodeValue).add(node);
     }
 
     @Override
@@ -69,7 +76,7 @@ public class BTreeIndexer implements Indexer {
 
     @Override
     public void deleteFromAllIndexed(JsonNode node) {
-        for (String property : getAllPropertyIndexed()) {
+        for (String property : this.getAllPropertyIndexed()) {
             this.deleteFromIndexed(property, node);
         }
     }
@@ -83,6 +90,16 @@ public class BTreeIndexer implements Indexer {
     @Override
     public boolean has(String key) {
         return index.search(key) != null;
+    }
+
+    @Override
+    public BTree<String, BTree<String, ArrayList<JsonNode>>> getIndexed() {
+        return new BTree<>(index);
+    }
+
+    @Override
+    public void setIndexed(BTree<String, BTree<String, ArrayList<JsonNode>>> indexed) {
+        this.index = indexed;
     }
 
 
