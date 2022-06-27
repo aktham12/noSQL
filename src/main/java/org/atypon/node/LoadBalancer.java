@@ -6,12 +6,14 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class LoadBalancer {
-    private static final Queue<ReadingNode> READING_NODES = new ConcurrentLinkedQueue<ReadingNode>();
+    private static final Queue<ReadingNode> READING_NODES = new ConcurrentLinkedQueue<>();
 
     private static final List<Integer> PORTS = new ArrayList<>();
+    private static int  runningOnDocker;
     private LoadBalancer(){ }
 
     public static void runNodes(int runningOnDocker) {
+        LoadBalancer.runningOnDocker = runningOnDocker;
         if(runningOnDocker ==1) {
             buildDockerImage();
         }
@@ -34,10 +36,13 @@ public class LoadBalancer {
         manager.run();
     }
 
-    public static void scaleHoriznatl(int n) {
+    public static void scaleHorizontal (int n) {
         for(int i=0;i<n;i++) {
             ReadingNode node1 = new ReadingNode();
-            node1.runDocker();
+            if(runningOnDocker == 1) {
+                node1.runDocker();
+            }
+            node1.runJars();
             READING_NODES.add(node1);
             PORTS.add(node1.getPort());
         }

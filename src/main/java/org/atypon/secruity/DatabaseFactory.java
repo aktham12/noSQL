@@ -6,7 +6,7 @@ public class DatabaseFactory {
 
     private DatabaseFactory() {}
 
-    public static DatabaseFacade getDatabase(boolean isAdmin) throws IOException {
+    public static DatabaseOperation getDatabase(boolean isAdmin){
         if(isAdmin) {
             return new AdminDatabase();
         } else {
@@ -14,7 +14,6 @@ public class DatabaseFactory {
         }
     }
 
-    // this function is used to return a new AdminDatabase if the boolean is true otherwise it will return a new UserDatabase
 
 
 

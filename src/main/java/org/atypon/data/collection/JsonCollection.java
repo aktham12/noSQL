@@ -3,7 +3,7 @@ package org.atypon.data.collection;
 import java.util.HashMap;
 
 public class JsonCollection {
-    private String name;
+    private final String name;
     private HashMap<String, JsonDocument> documents;
 
     public JsonCollection() {
@@ -33,9 +33,6 @@ public class JsonCollection {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public void deleteDocument(String name) {
         documents.remove(name);

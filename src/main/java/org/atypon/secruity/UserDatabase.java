@@ -10,7 +10,7 @@ import org.atypon.services.CollectionService;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class UserDatabase implements DatabaseFacade {
+public class UserDatabase implements DatabaseOperation {
     CRUDService crudService;
 
 
@@ -80,7 +80,7 @@ public class UserDatabase implements DatabaseFacade {
 
     @Override
     public Optional<ArrayList<JsonDocument>> getDocuments(String databaseName, String collectionName) {
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -149,6 +149,11 @@ public class UserDatabase implements DatabaseFacade {
     @Override
     public String getCurrentDatabaseName() {
         return null;
+    }
+
+    @Override
+    public void scaleHorizontal(int n) {
+        noAccess();
     }
 
     private void noAccess() {

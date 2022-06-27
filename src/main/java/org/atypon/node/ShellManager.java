@@ -20,8 +20,6 @@ public class ShellManager{
         try {
             ProcessBuilder builder = new ProcessBuilder("cmd.exe","/c",command);
             builder.start();
-            builder.redirectOutput(new File("log.txt"));
-
         } catch (IOException e) {
             throw new IllegalArgumentException("the command is not correct");
         }

@@ -8,7 +8,7 @@ import org.atypon.data.collection.JsonDocument;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public interface DatabaseFacade {
+public interface DatabaseOperation {
 
     Optional<Database> createDatabase(String databaseName);
 
@@ -50,8 +50,9 @@ public interface DatabaseFacade {
     void makeIndexOn(String property);
 
     ArrayList<JsonNode> find(String property, String propertyValue);
-    public String getCurrentDatabaseName();
+     String getCurrentDatabaseName();
 
+     void scaleHorizontal(int n);
 
 }
 

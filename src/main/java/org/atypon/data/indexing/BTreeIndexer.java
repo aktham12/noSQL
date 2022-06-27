@@ -19,11 +19,12 @@ public class BTreeIndexer implements Indexer, Serializable {
 
     @Override
     public void makeIndexOn(String property, ArrayNode jsonNode) {
-        if (index.search(property) == null)
-            index.insert(property, new BTree<>());
-        if (jsonNode.size() == 0) {
+        if (jsonNode.size() == 0 || property == null) {
             return;
         }
+        if (index.search(property) == null)
+            index.insert(property, new BTree<>());
+
         for (JsonNode node : jsonNode) {
             this.addToIndexed(property, node);
         }
@@ -31,15 +32,15 @@ public class BTreeIndexer implements Indexer, Serializable {
 
     @Override
     public void addToIndexed(String property, JsonNode node) {
-        String nodeValue;
-        if (node.has(property)) {
-            nodeValue = node.get(property).asText();
-            BTree<String, ArrayList<JsonNode>> temp = index.search(property);
-            if (temp.search(nodeValue) == null) {
-                temp.insert(nodeValue, new ArrayList<>());
-            }
-            temp.search(nodeValue).add(node);
+        if (!node.has(property)) {
+            return;
         }
+        String nodeValue = node.get(property).asText();
+        BTree<String, ArrayList<JsonNode>> temp = index.search(property);
+        if (temp.search(nodeValue) == null) {
+            temp.insert(nodeValue, new ArrayList<>());
+        }
+        temp.search(nodeValue).add(node);
     }
 
     @Override

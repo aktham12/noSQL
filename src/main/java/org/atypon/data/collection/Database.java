@@ -3,7 +3,7 @@ package org.atypon.data.collection;
 import java.util.HashMap;
 
 public class Database {
-    private String name;
+    private final String name;
     private final HashMap<String, JsonCollection> collections;
 
     public Database() {
@@ -31,10 +31,6 @@ public class Database {
 
     public String getDatabaseName() {
         return name;
-    }
-
-    public void setDatabaseName(String name) {
-        this.name = name;
     }
 
     public HashMap<String, JsonCollection> getCollectionGroup() {

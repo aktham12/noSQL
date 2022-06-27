@@ -124,17 +124,9 @@ public class DatabaseService {
 
                             if (!nodes.isEmpty()) {
                                 tempDocument.get().setNodesArray(nodes);
-                                try {
-                                    File file =new File(databases.get(j).getDatabaseName() +"/" + collection.getName() + "/" + "indexer.out");
-                                    if(file.exists()) {
-                                        tempDocument.get().getIndexer().setIndexed(FileWriterReader.getInstance().read("indexed.out"));
-                                    }
-                                } catch (IOException | ClassNotFoundException e) {
-                                    throw new RuntimeException(e);
-                                }
+                                tempDocument.get().getIndexer().makeIndexOn("_id", tempDocument.get().getNodesArray());
 
                             }
-                            tempDocument.get().getIndexer().makeIndexOn("_id", tempDocument.get().getNodesArray());
                         }
 
                 );
@@ -144,6 +136,7 @@ public class DatabaseService {
         }
         return databases;
     }
+
 }
 
 

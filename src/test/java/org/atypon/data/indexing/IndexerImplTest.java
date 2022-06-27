@@ -37,6 +37,7 @@ public class IndexerImplTest {
     @Test
     public void makeIndexOn() {
         indexer.makeIndexOn("name", nodes);
+        System.out.println(nodes.get(0).get("name"));
         assertEquals("khaled", indexer.get("name", "khaled").get(0).get("name").asText());
         assertEquals("aktham", indexer.get("name", "aktham").get(0).get("name").asText());
 

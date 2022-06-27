@@ -1,24 +1,20 @@
 package org.atypon.secruity;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.atypon.cache.Cache;
-import org.atypon.cache.LRUCache;
 import org.atypon.data.collection.Database;
 import org.atypon.data.collection.JsonCollection;
 import org.atypon.data.collection.JsonDocument;
 import org.atypon.node.LoadBalancer;
-import org.atypon.node.NodeServer;
 import org.atypon.services.CRUDService;
 import org.atypon.services.CollectionService;
 import org.atypon.services.DatabaseService;
 import org.atypon.services.DocumentService;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
 
-public class AdminDatabase implements DatabaseFacade {
+public class AdminDatabase implements DatabaseOperation {
     private final CRUDService crudService;
     public AdminDatabase() {
         this.crudService = setUpCRUD().build();
@@ -178,6 +174,10 @@ public class AdminDatabase implements DatabaseFacade {
         return crudService.getCurrentDatabase().getDatabaseName();
     }
 
+    @Override
+    public void scaleHorizontal(int n) {
+        LoadBalancer.scaleHorizontal(n);
+    }
 
 
 }

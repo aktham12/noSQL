@@ -11,12 +11,9 @@ public class CollectionService {
     private CollectionService() {
     }
 
-
-
     public static Optional<JsonCollection> addCollection(String databaseName, JsonCollection collection) {
         try {
             LocksManager.getInstance().getLock("CollectionLock").writeLock().lock();
-
             DatabaseService.getDatabase(databaseName).ifPresent(database -> database.addCollection(collection.getName()));
             DirectoryCreator.getInstance()
                     .createDirectory(databaseName

@@ -44,7 +44,7 @@ public class CRUDService {
         try {
             LocksManager.getInstance().getLock("CRUDLock").writeLock().lock();
             currentDocument.insertMany(jsons);
-            FileWriterReader.getInstance().writeJson(currentDatabase.getDatabaseName() + "/" + currentCollection.getName() + "/" + currentDocument.getDocumentName() + ".json", currentDocument.getNodesArray());
+            FileWriterReader.getInstance().writeJson(currentDatabase.getDatabaseName() + "/" + currentCollection.getName() + "/" + currentDocument.getDocumentName(), currentDocument.getNodesArray());
             updateIndexer();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -71,7 +71,7 @@ public class CRUDService {
         try {
             LocksManager.getInstance().getLock("CRUDLock").writeLock().lock();
             currentDocument.updateMany(property, propertyValue, newValue);
-            FileWriterReader.getInstance().writeJson(currentDatabase.getDatabaseName() + "/" + currentCollection.getName() + "/" + currentDocument.getDocumentName() + ".json", currentDocument.getNodesArray());
+            FileWriterReader.getInstance().writeJson(currentDatabase.getDatabaseName() + "/" + currentCollection.getName() + "/" + currentDocument.getDocumentName(), currentDocument.getNodesArray());
             updateIndexer();
 
         } catch (IOException e) {
@@ -85,6 +85,8 @@ public class CRUDService {
         try {
             LocksManager.getInstance().getLock("CRUDLock").writeLock().lock();
             currentDocument.delete(property, propertyValue);
+            FileWriterReader.getInstance().writeJson(currentDatabase.getDatabaseName() + "/" + currentCollection.getName() + "/" + currentDocument.getDocumentName(), currentDocument.getNodesArray());
+
             updateIndexer();
 
         } catch (IOException e) {
@@ -98,7 +100,8 @@ public class CRUDService {
         try {
             LocksManager.getInstance().getLock("CRUDLock").writeLock().lock();
             currentDocument.deleteMany(property, propertyValue);
-            DirectoryRemover.getInstance().deleteDirectory(currentDatabase.getDatabaseName() + "/" + currentCollection.getName() + "/" + currentDocument.getDocumentName() + ".json");
+            FileWriterReader.getInstance().writeJson(currentDatabase.getDatabaseName() + "/" + currentCollection.getName() + "/" + currentDocument.getDocumentName(), currentDocument.getNodesArray());
+
             updateIndexer();
 
         } catch (IOException e) {

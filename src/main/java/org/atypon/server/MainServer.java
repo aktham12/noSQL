@@ -1,16 +1,13 @@
 package org.atypon.server;
 
-
 import com.fasterxml.jackson.databind.JsonNode;
-import org.atypon.cache.Cache;
-import org.atypon.cache.LRUCache;
 import org.atypon.io.SocketFileManager;
 import org.atypon.node.LoadBalancer;
 import org.atypon.node.NodeServer;
-import org.atypon.secruity.DatabaseFacade;
+import org.atypon.secruity.AdminDatabase;
+import org.atypon.secruity.DatabaseOperation;
 import org.atypon.secruity.DatabaseFactory;
 import org.atypon.services.CRUDService;
-import org.atypon.services.CollectionService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,11 +23,10 @@ class Server implements Runnable {
     private final Socket socket;
     private final BufferedReader bufferedReader;
 
-    private DatabaseFacade databases;
+    private DatabaseOperation databases;
     private final CRUDService crudService;
 
     private final SocketFileManager socketFileManager;
-    private final Cache<String, JsonNode> cache;
     private final NodeServer readingNodesServer;
 
     public Server(Socket socket, NodeServer readingNodeServer) throws Exception {
@@ -43,7 +39,6 @@ class Server implements Runnable {
         builder.currentDocument("logins.json");
         crudService = builder.build();
         socketFileManager = SocketFileManager.create(this.socket);
-        cache = new LRUCache<>(100);
         this.readingNodesServer = readingNodeServer;
 
 
@@ -53,8 +48,20 @@ class Server implements Runnable {
     public void run() {
         System.out.println("New connection");
         try {
-            String credits = enterCredits();
+            String credits = enterCredentials();
             databases = DatabaseFactory.getDatabase(testCredit(credits));
+            if(credits.contains("admin") && databases instanceof AdminDatabase) {
+                send("please update ur password",socket);
+               String[] credits2 = enterCredentials().split(" ");
+                String json ="{" +
+                        "\"username\":"+
+                        "\"" +credits2[0]+"\"" +
+                        ",\"password\":"+
+                        "\"" +credits2[1]+"\"" +
+                        "}";
+               crudService.insert(json);
+            }
+
             while (!socket.isClosed()) {
                 String message = bufferedReader.readLine();
                 switch (message) {
@@ -172,6 +179,12 @@ class Server implements Runnable {
                         socketFileManager.receiveFile(databaseName4, "databases");
                         send("done", socket);
                         break;
+                    case "scale":
+                        int numberOfNodes = Integer.parseInt(bufferedReader.readLine());
+                        databases.scaleHorizontal(numberOfNodes);
+                        send("done", socket);
+                        break;
+
                     case "find":
                         send(String.valueOf(LoadBalancer.getRandomPort()), socket);
                         send("done", socket);
@@ -187,20 +200,30 @@ class Server implements Runnable {
     }
 
 
-    private String enterCredits() throws IOException {
+    private String enterCredentials() throws IOException {
         String info = bufferedReader.readLine();
         send("done", socket);
+
         return info;
     }
 
 
-    private boolean testCredit(String creids) {
-        String[] credits = creids.split(" ");
+    private boolean testCredit(String credentials) {
+        String[] credits = credentials.split(" ");
         System.out.println(credits[0]);
         ArrayList<JsonNode> list = crudService.find("username", credits[0]);
+        wipeUsers();
         if (list == null || list.size() == 0) {
             return false;
         } else return list.get(0).get("password").asText().equals(credits[1]);
+    }
+
+    private void wipeUsers() {
+
+        crudService.deleteMany(
+                "password",
+                "admin"
+        );
     }
 
 

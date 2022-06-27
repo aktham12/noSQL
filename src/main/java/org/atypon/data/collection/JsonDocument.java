@@ -20,7 +20,7 @@ public class JsonDocument {
     private final String id;
     private ArrayNode nodesArray;
     private final Indexer indexer;
-    private int i = 0;
+    private boolean firstAccess = true;
 
     public JsonDocument(String documentName) {
         this.documentName = documentName;
@@ -154,14 +154,14 @@ public class JsonDocument {
     }
 
     private void updateIndex(JsonNode newValue) {
-        if (i == 0) {
-            i++;
+        if (firstAccess) {
             indexer.makeIndexOn("_id", this.getNodesArray());
-        } else {
-            for (String property : indexer.getAllPropertyIndexed()) {
+            firstAccess = false;
+        }
+        for (String property : indexer.getAllPropertyIndexed()) {
                 indexer.addToIndexed(property, newValue);
             }
-        }
+
     }
 
     private void removeFromIndexed(JsonNode value) {
